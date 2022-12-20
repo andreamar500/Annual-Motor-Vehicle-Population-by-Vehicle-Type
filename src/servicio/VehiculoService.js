@@ -6,5 +6,8 @@ export class VehiculoService {
     getAll(){
         return axios.get(this.url).then(res => res.data);
     }
+    save(vehiculo) {
+        return axios.post(this.url, vehiculo).then(res => res.data);
+    }
 
 }
