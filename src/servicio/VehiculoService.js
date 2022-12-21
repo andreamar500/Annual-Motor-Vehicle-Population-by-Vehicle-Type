@@ -9,5 +9,8 @@ export class VehiculoService {
     save(vehiculo) {
         return axios.post(this.url, vehiculo).then(res => res.data);
     }
+    delete(id) {
+        return axios.delete(this.url+id).then(res => res.data);
+    }
 
 }
