@@ -12,5 +12,8 @@ export class VehiculoService {
     delete(id) {
         return axios.delete(this.url+id).then(res => res.data);
     }
+    findById(id){
+        return axios.get(this.url+id).then(res => res.data);
+    }
 
 }

@@ -9,6 +9,8 @@ import {InputText} from 'primereact/inputtext';
 import {Button} from 'primereact/button';
 import {Growl} from 'primereact/growl';
 import {Panel} from 'primereact/panel';
+import {CSVLink} from 'react-csv';
+import axios from 'axios';
 
 
 import 'primereact/resources/themes/nova-light/theme.css';
@@ -16,9 +18,11 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 
 export default class App extends Component{
+  url = "http://localhost:8080/api/vehiculos/";
   constructor(){
     super();
     this.state = {
+      
       visible : false,
       vehiculo: {
         id: null,
@@ -27,6 +31,8 @@ export default class App extends Component{
         tipo: null,
         numVehiculos : null
       },
+      listOfData: [],
+      loading: false,
       selectedVehiculo : {
 
       },
@@ -68,12 +74,17 @@ export default class App extends Component{
 
 
 
+
   }
 
 
+
   //para que se ejecute despues del primer render de este componente principal
-  componentDidMount(){
-    this.vehiculoService.getAll().then(data => this.setState({vehiculos: data}))
+  async componentDidMount(){
+    this.vehiculoService.getAll().then(data => this.setState({vehiculos: data}));
+    const res = await axios.get("http://localhost:8080/api/vehiculos/");
+    this.setState({listOfData: res.data});
+    console.log(this.state.listOfData);
   }
   save() {
     this.vehiculoService.save(this.state.vehiculo).then(data => {
@@ -123,13 +134,17 @@ export default class App extends Component{
     return (
        <div style={{width:'80%', margin: '0 auto', marginTop: '20px'}}>
         <br/>
+        
+        <CSVLink data={this.state.listOfData} filename={"annual-motor-vehicle-population-by-vehicle-type.csv"}><Button label="Download" className="p-button-success" icon="pi pi-file-excel"/></CSVLink>
+        <br/>
+        <br/>
           <Menubar model={this.items}/>
-          <Panel header="React CRUD App">
-          <DataTable value={this.state.vehiculos} paginator={true} rows="4" selectionMode="single" selection={this.state.selectedVehiculo} onSelectionChange={e => this.setState({selectedVehiculo: e.value})}>
-            <Column field="anio" header="Year"></Column>
-            <Column field="categoria" header="Category"></Column>
-            <Column field="tipo" header="Type"></Column>
-            <Column field="numVehiculos" header="No. of Vehicles"></Column>
+          <Panel header="Annual Motor Vehicle Population by Vehicle Type">
+          <DataTable id="tabla" value={this.state.vehiculos} paginator={true} rows="4" selectionMode="single" selection={this.state.selectedVehiculo} onSelectionChange={e => this.setState({selectedVehiculo: e.value})} responsiveLayout="scroll">
+            <Column field="anio" header="Year" sortable></Column>
+            <Column field="categoria" header="Category" sortable></Column>
+            <Column field="tipo" header="Type" sortable></Column>
+            <Column field="numVehiculos" header="No. of Vehicles" sortable></Column>
           </DataTable>
 
           </Panel>
